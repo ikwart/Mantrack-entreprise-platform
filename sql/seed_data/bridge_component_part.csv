@@ -1,0 +1,18 @@
+component_id,part_category,typical_qty,is_primary
+1,Hydraulic Component,1,True
+1,Consumable,1,False
+2,Hydraulic Component,1,True
+3,Engine/Powertrain Component,1,True
+3,Consumable,1,False
+4,Engine/Powertrain Component,1,True
+4,Consumable,1,False
+5,Engine/Powertrain Component,1,True
+6,Engine/Powertrain Component,1,True
+7,Undercarriage Wear Part,2,True
+8,Engine/Powertrain Component,1,True
+8,Consumable,1,False
+9,Engine/Powertrain Component,1,True
+9,Consumable,1,False
+10,Engine/Powertrain Component,1,True
+11,Electrical Component,1,True
+12,Electrical Component,1,True

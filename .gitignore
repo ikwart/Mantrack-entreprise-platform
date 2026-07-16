@@ -1,0 +1,31 @@
+# Environment
+.env
+
+# Airflow runtime
+airflow/logs/
+airflow/plugins/__pycache__/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Spark
+spark/jobs/__pycache__/
+*.crc
+_SUCCESS
+sql/transactions/ml_maintenance_signals_raw/
+
+# dbt
+dbt/**/target/
+dbt/**/dbt_packages/
+dbt/**/logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/

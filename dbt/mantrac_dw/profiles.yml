@@ -1,0 +1,20 @@
+# Normally profiles.yml lives outside the project (~/.dbt/profiles.yml), but
+# keeping it here makes the repo self-contained - run dbt with
+# `--profiles-dir .` (or set DBT_PROFILES_DIR=. ) from this directory.
+#
+# Connection details come from env vars so the SAME profile works both
+# inside docker-compose (host=postgres-dw, matching docker-compose.yml's
+# service name) and for local testing against a differently-hosted Postgres.
+
+mantrac_dw:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('DBT_DW_HOST', 'postgres-dw') }}"
+      port: "{{ env_var('DBT_DW_PORT', '5432') | as_number }}"
+      user: "{{ env_var('DW_DB_USER', 'mantrac_admin') }}"
+      pass: "{{ env_var('DW_DB_PASSWORD', 'change_me_dw') }}"
+      dbname: "{{ env_var('DW_DB_NAME', 'mantrac_dw') }}"
+      schema: analytics
+      threads: 4

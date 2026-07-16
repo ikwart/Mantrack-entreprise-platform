@@ -1,0 +1,11 @@
+version: 2
+
+models:
+  - name: int_revenue_by_stream_month
+    description: "Unions equipment sales, rental, and service revenue onto a common (customer_id, period_month, revenue_stream, revenue) grain. Monthly is the finest useful grain - quarter/annual views are the BI tool's date hierarchy rolling this up, not separate models."
+
+  - name: int_tax_allocated_to_month
+    description: "Allocates each quarterly GRA filing down to its 3 constituent months, weighted by each month's ACTUAL share of that quarter's revenue (not a flat 1/3 split) - see the model's own header comment for why revenue itself stays monthly while tax stays sourced from the real quarterly filing event. Reconciles back to the original filing to within a rounding cent (verified)."
+
+  - name: int_parts_consumption
+    description: "Historical parts consumption joined to the branch/date it was consumed at - feeds inventory turnover in mart_warehouse_inventory."

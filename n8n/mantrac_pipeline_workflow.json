@@ -1,0 +1,108 @@
+{
+  "name": "Mantrac Predictive Maintenance Pipeline (n8n - local substitute for Airflow)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 6 * * *"
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Daily 6am Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "command": "python3 spark/jobs/telemetry_stream_consumer.py --kafka-bootstrap localhost:9092 --jdbc-url jdbc:postgresql://localhost:5433/mantrac_dw --db-user mantrac_etl --db-password {{$env.MANTRAC_ETL_PASSWORD}} --checkpoint-dir ./spark_checkpoints"
+      },
+      "id": "consume-telemetry",
+      "name": "1. Consume Telemetry Stream",
+      "notes": "Requires Kafka+Zookeeper running (docker-compose up -d kafka zookeeper) and Postgres running (docker-compose up -d postgres-dw). Runs as a plain local Spark process (local[*] mode) - no Spark Docker containers needed. Needs the Postgres JDBC driver fetchable from Maven Central at runtime (spark.jars.packages) - requires real internet access, works fine outside a network-restricted sandbox.",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [250, 0]
+    },
+    {
+      "parameters": {
+        "command": "python3 spark/jobs/predictive_maintenance_scoring.py --sql-dir sql --kafka-data-dir kafka/data --out-dir sql/transactions"
+      },
+      "id": "score-predictive-maintenance",
+      "name": "2. Score Predictive Maintenance",
+      "notes": "Plain local Spark process (local[*] mode, no cluster needed) - feature engineering, GBT training/scoring. Reads/writes local CSV files under sql/, not Postgres directly.",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [500, 0]
+    },
+    {
+      "parameters": {
+        "command": "python3 spark/jobs/merge_signals_output.py --raw-dir sql/transactions/ml_maintenance_signals_raw --out-file sql/transactions/ml_maintenance_signals.csv"
+      },
+      "id": "merge-signals",
+      "name": "3. Merge Signals Output",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [750, 0]
+    },
+    {
+      "parameters": {
+        "command": "python3 pipeline/apply_triage_rules.py --sql-dir sql"
+      },
+      "id": "apply-triage",
+      "name": "4. Apply Triage Rules",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [1000, 0]
+    },
+    {
+      "parameters": {
+        "command": "python3 pipeline/resolve_parts_demand.py --sql-dir sql"
+      },
+      "id": "resolve-parts",
+      "name": "5. Resolve Parts Demand",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [1250, 0]
+    },
+    {
+      "parameters": {
+        "command": "python3 pipeline/convert_signals_to_workorders.py --sql-dir sql"
+      },
+      "id": "convert-to-workorders",
+      "name": "6. Convert Signals to Work Orders",
+      "notes": "Last step - writes new Predictive work orders back into sql/transactions/fact_maintenance_events.csv. Reload into Postgres separately via sql/transactions/load_transactions.sql when you want the warehouse to reflect the update (not done automatically by this workflow - same as the Airflow DAG, which also operates on the CSV layer, not Postgres directly, for these five steps).",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [1500, 0]
+    }
+  ],
+  "connections": {
+    "Daily 6am Trigger": {
+      "main": [[{ "node": "1. Consume Telemetry Stream", "type": "main", "index": 0 }]]
+    },
+    "1. Consume Telemetry Stream": {
+      "main": [[{ "node": "2. Score Predictive Maintenance", "type": "main", "index": 0 }]]
+    },
+    "2. Score Predictive Maintenance": {
+      "main": [[{ "node": "3. Merge Signals Output", "type": "main", "index": 0 }]]
+    },
+    "3. Merge Signals Output": {
+      "main": [[{ "node": "4. Apply Triage Rules", "type": "main", "index": 0 }]]
+    },
+    "4. Apply Triage Rules": {
+      "main": [[{ "node": "5. Resolve Parts Demand", "type": "main", "index": 0 }]]
+    },
+    "5. Resolve Parts Demand": {
+      "main": [[{ "node": "6. Convert Signals to Work Orders", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

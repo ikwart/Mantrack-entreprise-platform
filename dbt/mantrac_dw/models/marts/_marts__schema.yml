@@ -1,0 +1,100 @@
+version: 2
+
+models:
+  - name: mart_finance
+    description: "One row per customer per MONTH - revenue by stream (native monthly), plus GRA tax (VAT/NHIL/GETFund/withholding) allocated down from the real quarterly filing, weighted by each month's actual share of quarterly revenue. period_quarter/period_year columns let a BI slicer roll this up without needing separate quarterly/annual models. Powers the Finance dashboard and industry slicer."
+    columns:
+      - name: customer_id
+        tests: [not_null]
+      - name: industry_id
+        tests: [not_null]
+      - name: period_month
+        description: "First day of the month this row represents - the native grain of this mart."
+      - name: period_quarter
+      - name: period_year
+      - name: total_revenue
+        description: "Sum of equipment_sales_revenue + rental_revenue + service_revenue for this customer this month, in GHS."
+        tests: [not_null]
+      - name: equipment_sales_margin
+        description: "sale_price minus cost_basis on equipment sold this month, in GHS. The ONLY revenue stream with a genuine cost basis in this data model - Rental and Service revenue don't have real margin data behind them (Service is currently modeled as equal to work-order cost), so no blended total-margin figure is computed here."
+      - name: equipment_sales_margin_pct
+        description: "equipment_sales_margin as a percent of equipment_sales_revenue. Null (not 0) when there was no equipment sale that month, to avoid implying a 0% margin on a sale that didn't happen."
+      - name: total_output_tax_allocated
+        description: "VAT + NHIL + GETFund allocated to this month from the real quarterly GRA filing, weighted by this month's share of that quarter's revenue - not a flat 1/3 split. In GHS."
+      - name: filing_status
+        description: "Status of the QUARTERLY filing this month belongs to (Filed/Pending/Overdue) - the filing itself is a real quarterly event, this just surfaces its status against every month it covers."
+
+  - name: mart_warehouse_inventory
+    description: "Current inventory snapshot at cost, one row per part per branch. is_dead_stock flags qty_on_hand > 0 with no consumption in 180+ days (or ever) - consumption stats are per-part globally, not per part+branch, since fact_maintenance_parts_used has no branch link (see model header note). NOTE: currently 0 rows flagged in this dataset - verified this is genuine (max days_since_last_consumption across all parts is 16, nowhere near the 180-day threshold), not a bug in the detection logic. With only 23 distinct parts spread across 347 machines and a decade of maintenance history, every SKU turns over frequently - a real, honest finding about this dataset's shape, not evidence the logic doesn't work."
+    columns:
+      - name: part_id
+        tests: [not_null]
+      - name: branch
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['Accra', 'Kumasi', 'Takoradi', 'Tarkwa']
+      - name: unit_cost_ghs
+        tests: [not_null]
+
+  - name: mart_predictive_maintenance
+    description: "One row per predictive maintenance signal, enriched with equipment/customer/component context."
+    columns:
+      - name: signal_id
+        tests: [not_null, unique]
+      - name: failure_probability
+        tests: [not_null]
+      - name: signal_status
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['New', 'Watch', 'Action Recommended', 'Reviewed', 'Converted', 'Dismissed', 'Expired']
+
+  - name: mart_fleet_operations
+    description: "One row per equipment - utilization, MTBF/MTTR, ownership, rental usage."
+    columns:
+      - name: equipment_id
+        tests: [not_null, unique]
+      - name: ownership_type
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['Owned', 'Rented']
+
+  - name: mart_maintenance_type_ratio
+    description: "Monthly work order counts by maintenance type - feeds the predictive-vs-reactive ratio KPI."
+
+  - name: mart_parts_catalog_gaps
+    description: "One row per logged catalog gap - a predictive signal whose component couldn't be resolved to any part compatible with that specific equipment model (see pipeline/resolve_parts_demand.py). Answers 'is our parts catalog complete enough to support predictive maintenance'. NOTE: 0 rows in the 120-day validation sample used during development, since only 1 Action Recommended signal existed and it resolved successfully - expect real rows once scored against the full 24-month dataset."
+    columns:
+      - name: gap_id
+        tests: [not_null, unique]
+      - name: component_id
+        tests: [not_null]
+      - name: model_id
+        tests: [not_null]
+
+  - name: mart_parts_catalog_gaps_summary
+    description: "One row per (model, component) combination with at least one gap, ranked by total_gaps descending - the prioritization view for catalog completion work. Built on mart_parts_catalog_gaps, so inherits the same 0-rows-in-sample-data caveat."
+
+  - name: mart_branch_performance
+    description: "One row per Mantrac branch per month - work order volume, maintenance-type mix, and SLA compliance rate, derived from the technician assigned to each work order (not customer proximity). Powers the Branch slicer on the Warehouse & Inventory tab (which is branch-native) and any dedicated branch-performance view."
+    columns:
+      - name: branch
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['Accra', 'Kumasi', 'Takoradi', 'Tarkwa']
+      - name: sla_compliance_pct
+        description: "Percent of measurable work orders (actual_start/actual_completion both populated) completed within their sla_target_hours. Null when sla_measurable_count is 0, not a false 0%."
+
+  - name: mart_customer_concentration
+    description: "One row per customer, all-time revenue with concentration ranking - the 'top N customers = X% of revenue' framing. All-time rather than a trailing window deliberately, since with only 18 customers a shorter window would swing wildly month to month."
+    columns:
+      - name: customer_id
+        tests: [not_null, unique]
+      - name: revenue_rank
+        tests: [not_null]
+      - name: cumulative_pct_of_total_revenue
+        description: "Running total of pct_of_total_revenue ordered by revenue_rank - read the row for rank 3 to answer 'what % of revenue do our top 3 customers represent'."

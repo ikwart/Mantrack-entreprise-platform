@@ -1,0 +1,64 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: "One row per customer. Light rename/passthrough from dim_customer - grain and columns match the source exactly."
+    columns:
+      - name: customer_id
+        description: "Primary key, matches dim_customer.customer_id."
+      - name: contract_tier
+        description: "SLA tier (Standard/Silver/Gold/Platinum) - drives triage escalation in the predictive maintenance pipeline."
+
+  - name: stg_industries
+    description: "Industry lookup (Mining, Construction, Oil & Gas, Energy/Power, Quarrying, Logistics) - the dimension the cross-dashboard Industry slicer filters on."
+
+  - name: stg_sites
+    description: "One row per customer site. Carries latitude/longitude used by the Fleet Map."
+
+  - name: stg_equipment
+    description: "One row per physical machine. Grain: equipment_id."
+
+  - name: stg_equipment_models
+    description: "Cat model catalog (e.g. Cat 785D, Cat D11) with USD reference list price - never used directly as a transactional amount, see currency convention note in generate_transactions.py."
+
+  - name: stg_equipment_categories
+    description: "The 12 equipment categories (Excavator, Dozer, Off-Highway Truck, etc.), each tagged with primary_application (Mining/Construction/Both)."
+
+  - name: stg_components
+    description: "The 12-item failure taxonomy predicted by the ML model - the shared vocabulary between fault codes (what equipment reports) and parts (what the warehouse stocks)."
+
+  - name: stg_parts
+    description: "Parts catalog. unit_cost_usd is a USD REFERENCE price - fact_inventory carries the GHS-converted transactional cost, don't conflate the two."
+
+  - name: stg_technicians
+    description: "Mantrac service technicians by branch (Accra/Kumasi/Takoradi/Tarkwa)."
+
+  - name: stg_equipment_sales
+    description: "One row per equipment sale. sale_price/cost_basis are GHS. margin is computed here, not stored redundantly upstream."
+
+  - name: stg_rental_contracts
+    description: "One row per rental contract period. is_ongoing flags contracts with no end_date yet."
+
+  - name: stg_maintenance_events
+    description: "One row per work order. is_predictive_sourced flags whether this came from an ML signal (source_signal_id is not null) - the field the predictive-vs-reactive ratio KPI is built from."
+
+  - name: stg_maintenance_parts_used
+    description: "Line-item parts consumption per work order - the join key between maintenance and inventory turnover."
+
+  - name: stg_telemetry_daily
+    description: "One row per equipment per day - daily-aggregate telemetry (fault counts by severity, sensor readings, engine hours). Event-level fault detail lives in fact_fault_events, not here."
+
+  - name: stg_inventory
+    description: "Current inventory snapshot, carried AT COST (unit_cost_ghs) - never at selling price. is_below_reorder_point flags stockout risk."
+
+  - name: stg_tax_filings
+    description: "Quarterly GRA filings (VAT/NHIL/GETFund/withholding) - genuinely quarterly at the source, since that's the real filing cadence. See int_tax_allocated_to_month for how this gets apportioned to monthly grain for the Finance dashboard."
+
+  - name: stg_ml_signals
+    description: "One row per predictive maintenance signal (equipment x component x scoring run). Model output - never written to directly by anything except the Spark scoring job and the triage/conversion pipeline."
+
+  - name: stg_parts_demand_forecast
+    description: "Parts resolved from Action Recommended signals, scoped to the specific equipment's model - the bridge between predictive maintenance and warehouse demand."
+
+  - name: stg_parts_mapping_gaps
+    description: "Logged whenever a predicted component has no compatible part for a given equipment model - a genuine catalog-coverage metric, not silently dropped."

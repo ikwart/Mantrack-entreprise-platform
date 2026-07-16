@@ -1,0 +1,19 @@
+customer_id,customer_code,customer_name,customer_type,industry_id,region,contract_tier
+1,GFG-TKW,Gold Fields Ghana (Tarkwa),Owner-Operator,1,Western,Platinum
+2,AGA-OBS,AngloGold Ashanti (Obuasi),Owner-Operator,1,Ashanti,Platinum
+3,NEM-AHF,Newmont Ghana (Ahafo/Akyem),Owner-Operator,1,Ahafo,Platinum
+4,GSR-WBG,Golden Star Resources (Wassa/Bogoso),Owner-Operator,1,Western,Gold
+5,ASK-GLD,Asanko Gold Mine,Owner-Operator,1,Ashanti,Gold
+6,GMC-NSU,Ghana Manganese Company (Nsuta),Owner-Operator,1,Western,Gold
+7,GBX-AWS,Ghana Bauxite Company,Owner-Operator,1,Western,Silver
+8,RSI-ACC,Rocksure International,Contract Miner,1,Greater Accra,Platinum
+9,ENP-ACC,Engineers & Planners (E&P),Contract Miner,1,Greater Accra,Platinum
+10,CCG-ACC,Contracta Construction Ghana,Construction Contractor,2,Greater Accra,Gold
+11,MIC-ACC,Micheletti & Co. Ghana,Construction Contractor,2,Greater Accra,Silver
+12,CNS-ACC,Consar Limited,Construction Contractor,2,Greater Accra,Silver
+13,VBC-ACC,Vanhein Building & Civil Engineering,Construction Contractor,2,Greater Accra,Standard
+14,JMQ-EST,Justmoh Construction & Quarry,Quarry Operator,5,Eastern,Silver
+15,RLQ-EST,Rocklove Company Limited,Quarry Operator,5,Eastern,Standard
+16,GPH-TKD,Ghana Ports and Harbours Authority (Takoradi),Logistics/Energy,6,Western,Gold
+17,BPA-BNO,Bui Power Authority,Logistics/Energy,4,Bono,Silver
+18,ZOM-NAT,Zoomlion Ghana,Logistics/Energy,6,Greater Accra,Gold

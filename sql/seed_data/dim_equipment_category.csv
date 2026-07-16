@@ -1,0 +1,13 @@
+category_id,category_name,primary_application
+1,Excavator,Both
+2,Hydraulic Mining Shovel,Mining
+3,Off-Highway Truck,Mining
+4,Dragline,Mining
+5,Dozer,Both
+6,Motor Grader,Both
+7,Compactor,Construction
+8,Asphalt Paver,Construction
+9,Backhoe Loader,Construction
+10,Wheel Loader,Both
+11,Skid Steer Loader,Construction
+12,Road Reclaimer,Construction

@@ -1,0 +1,19 @@
+site_id,site_name,customer_id,region,latitude,longitude
+1,Tarkwa Mine Site,1,Western,5.3038,-1.9896
+2,Obuasi Mine Site,2,Ashanti,6.2012,-1.6913
+3,Ahafo Mine Site,3,Ahafo,7.0167,-2.3667
+4,Wassa/Bogoso Mine Site,4,Western,5.7833,-1.9667
+5,Asanko Mine Site,5,Ashanti,6.5333,-1.9667
+6,Nsuta Mine Site,6,Western,5.2833,-1.95
+7,Awaso Bauxite Site,7,Western,6.2333,-2.3667
+8,Rocksure Multi-Site Operations,8,Greater Accra,5.6037,-0.187
+9,E&P Tarkwa/Damang Contract Site,9,Greater Accra,5.4667,-1.9833
+10,Contracta Accra Project Yard,10,Greater Accra,5.56,-0.205
+11,Micheletti Accra Depot,11,Greater Accra,5.59,-0.19
+12,Consar Accra Site,12,Greater Accra,5.61,-0.2
+13,Vanhein Accra Site,13,Greater Accra,5.58,-0.17
+14,Justmoh Quarry - Eastern Region,14,Eastern,6.0833,-0.25
+15,Rocklove Quarry - Eastern Region,15,Eastern,6.1,-0.3
+16,Takoradi Port Terminal,16,Western,4.8845,-1.7554
+17,Bui Dam Site,17,Bono,8.2667,-2.25
+18,Zoomlion National Depot (Accra),18,Greater Accra,5.62,-0.21

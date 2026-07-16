@@ -1,0 +1,24 @@
+fault_code,description,severity,system_category
+E-101,Hydraulic pressure below threshold,Warning,Hydraulics
+E-102,Hydraulic pump cavitation detected,Critical,Hydraulics
+E-103,Hydraulic cylinder seal leak indicated,Warning,Hydraulics
+E-201,Coolant temperature exceeds limit,Critical,Engine
+E-202,Coolant level low,Warning,Engine
+E-203,Fuel injector pressure deviation,Warning,Engine
+E-204,Fuel rail pressure low,Critical,Engine
+E-205,Air filter restriction high,Info,Engine
+E-206,Turbocharger boost pressure low,Warning,Engine
+E-207,Turbocharger overspeed,Critical,Engine
+E-301,Track tension deviation,Warning,Undercarriage
+E-302,Undercarriage wear limit approaching,Warning,Undercarriage
+E-303,Track roller bearing temperature high,Critical,Undercarriage
+E-401,Final drive oil temperature high,Warning,Powertrain
+E-402,Final drive metal particulate detected,Critical,Powertrain
+E-403,Transmission slip detected,Warning,Powertrain
+E-404,Transmission fluid pressure low,Critical,Powertrain
+E-405,Torque converter temperature high,Warning,Powertrain
+E-501,Alternator output below spec,Warning,Electrical
+E-502,ECM communication fault,Critical,Electrical
+E-503,Sensor signal out of range,Info,Electrical
+E-001,Routine diagnostic check passed with minor note,Info,Engine
+E-002,Minor vibration anomaly logged,Info,Undercarriage

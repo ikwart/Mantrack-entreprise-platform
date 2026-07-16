@@ -1,0 +1,25 @@
+technician_id,technician_name,branch,certification_level
+1,Ama Mensah,Accra,Certified
+2,Fiifi Sarpong,Kumasi,Senior Certified
+3,Ama Osei,Takoradi,Certified
+4,Abena Adjei,Tarkwa,Certified
+5,Nana Darko,Accra,Senior Certified
+6,Nana Owusu,Kumasi,Certified
+7,Adjoa Appiah,Takoradi,Certified
+8,Kwesi Osei,Tarkwa,Certified
+9,Kwesi Osei,Accra,Certified
+10,Adjoa Boateng,Kumasi,Senior Certified
+11,Yaw Appiah,Takoradi,Senior Certified
+12,Nana Gyasi,Tarkwa,Certified
+13,Yaw Darko,Accra,Senior Certified
+14,Kojo Mensah,Kumasi,Certified
+15,Ama Asante,Takoradi,Certified
+16,Nii Asante,Tarkwa,Certified
+17,Kwesi Boateng,Accra,Certified
+18,Kwabena Frimpong,Kumasi,Senior Certified
+19,Kofi Darko,Takoradi,Certified
+20,Kwesi Agyeman,Tarkwa,Certified
+21,Ama Boateng,Accra,Master Technician
+22,Ama Amoah,Kumasi,Certified
+23,Esi Osei,Takoradi,Senior Certified
+24,Efua Sarpong,Tarkwa,Senior Certified

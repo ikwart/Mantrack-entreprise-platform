@@ -1,0 +1,32 @@
+version: 2
+
+sources:
+  - name: raw
+    description: "Raw warehouse tables loaded directly by the seed/transaction generators and the Spark/pipeline scripts (public schema)."
+    schema: public
+    tables:
+      - name: dim_customer
+      - name: dim_industry
+      - name: dim_site
+      - name: dim_equipment
+      - name: dim_equipment_model
+      - name: dim_equipment_category
+      - name: dim_component
+      - name: dim_fault_code
+      - name: dim_part
+      - name: dim_technician
+      - name: dim_date
+      - name: bridge_component_part
+      - name: bridge_faultcode_component
+      - name: bridge_part_model_compatibility
+      - name: fact_equipment_sales
+      - name: fact_rental_contracts
+      - name: fact_maintenance_events
+      - name: fact_maintenance_parts_used
+      - name: fact_telemetry_daily
+      - name: fact_inventory
+      - name: fact_tax_filings
+      - name: ml_maintenance_signals
+      - name: parts_demand_forecast
+      - name: parts_mapping_gaps
+      - name: signal_outcomes

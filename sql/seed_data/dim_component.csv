@@ -1,0 +1,13 @@
+component_id,component_name,system_category
+1,Hydraulic Pump,Hydraulics
+2,Hydraulic Cylinder Seal,Hydraulics
+3,Engine Coolant System,Engine
+4,Fuel Injector,Engine
+5,Air Filter System,Engine
+6,Turbocharger,Engine
+7,Undercarriage/Track,Undercarriage
+8,Final Drive,Powertrain
+9,Transmission,Powertrain
+10,Torque Converter,Powertrain
+11,Alternator/Charging System,Electrical
+12,ECM/Sensor Module,Electrical
