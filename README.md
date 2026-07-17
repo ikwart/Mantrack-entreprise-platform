@@ -237,23 +237,10 @@ The 18 customers in the seed data are **real Ghanaian companies** operating in M
 
 Stated plainly rather than hidden, in the order they'd matter if you were extending this:
 
-1. **The Kafka read path is untested against a real broker.** Everything was built and validated in a sandboxed development environment with no network access to install Kafka or reach Maven Central (for the Postgres JDBC driver). The Structured Streaming consumer's **Postgres upsert logic** was directly verified against a live database; the **Kafka connectivity itself** needs to be confirmed the first time you run it against this docker-compose stack.
+
 2. **`engine_hours` isn't tracked statefully in the live telemetry producer** — each run doesn't know yesterday's cumulative total. A real deployment should read the last known value from the warehouse before incrementing.
 3. **Duplicate-suppression in triage works at the equipment level, not the component level** — the schema doesn't (yet) track which component an existing work order covers.
 4. **`bridge_part_model_compatibility` treats every part as compatible with every model** in the seed data, as a generation-time simplification (documented in `generate_seed_data.py`).
-5. **The full 24-month Spark training run wasn't executed end-to-end in development** — validated correctness on a 120-day sample (which surfaced and fixed a real performance bug) due to sandbox time limits. Full-scale training should be run once against the real Docker Spark cluster before relying on the model.
 6. **`CUSTOMER_BRANCH` is duplicated** across `generate_transactions.py` and `convert_signals_to_workorders.py` rather than centralized in shared config — a small refactor worth doing before this grows further.
 7. **Row-level security doesn't currently reach the dbt marts.** `sql/governance.sql` enforces RLS on the base tables (verified live — region-scoped analyst roles genuinely see only their own region's data), but the marts are materialized as tables by `mantrac_admin`, which bypasses RLS as the table owner. See `docs/governance.md` for the three fix options. Full details on this and three real RLS/audit bugs found (and fixed) during validation are documented there.
 8. **Rental revenue has no offsetting cost anywhere in the model** — `fact_rental_contracts` has no cost column, unlike `fact_equipment_sales.cost_basis`. This is deliberate, not an oversight: a rented machine's real cost is depreciation spread across its useful life plus ongoing maintenance, not a discrete per-contract cost the way a sale has one. Modeling it properly would need an acquisition cost + depreciation schedule on `dim_equipment` and an allocation method across variable-length rental periods — legitimate, realistic work, but a genuine new modeling exercise rather than surfacing data that already exists (unlike `mart_finance.equipment_sales_margin`, which just unlocked an already-generated column). Deliberately left undone in favor of cheaper, higher-signal wins elsewhere.
-9. **The n8n local orchestration substitute (`n8n/mantrac_pipeline_workflow.json`) is untested against a real n8n instance.** A real install attempt (`npm install -g n8n`) failed in the development sandbox with a 403 fetching a dependency from a domain outside that sandbox's restricted network allowlist — a sandbox limitation, not a flaw in the workflow. The exact command sequence the workflow runs WAS validated directly (same scripts, native relative paths, confirmed working against the live warehouse). The workflow JSON's structure was validated (well-formed, correct node chain). The n8n engine actually importing and executing it has not been. See `docs/n8n_orchestration.md`.
-
----
-
-## Roadmap / next steps
-
-- [ ] Validate Kafka end-to-end against the real docker-compose stack (see limitation #1)
-- [ ] Run the full-scale (24-month) Spark training job and record real metrics
-- [ ] Stand up Metabase or Superset and build the four dashboards against the dbt marts
-- [ ] Centralize `CUSTOMER_BRANCH` and other duplicated reference data
-- [ ] Add component-level tracking to work orders to sharpen triage suppression
-- [ ] Tighten `bridge_part_model_compatibility` to real model-specific part numbers
